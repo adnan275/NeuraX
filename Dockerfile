@@ -31,7 +31,8 @@ RUN mkdir -p /home/user/.ollama/models && \
         sleep 1; \
     done && \
     ollama pull llama3.2 && \
-    ollama pull nomic-embed-text
+    ollama pull nomic-embed-text && \
+    pkill ollama
 
 # Copy the rest of the application
 COPY --chown=user . .
