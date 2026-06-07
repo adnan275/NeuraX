@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>NeuraX — Vector Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050508;
+      --surface: #0a0a0e;
+      --panel: #0e0e13;
+      --panel-glass: rgba(14, 14, 19, 0.9);
+      --border: #1d1d24;
+      --border-hover: #2e2e3a;
+      --accent: #00e676;
+      --accent-grad: linear-gradient(135deg, #00e676 0%, #ffc400 100%);
+      --accent-glow: rgba(0, 230, 118, 0.12);
+      --text: #f1f5f9;
+      --muted: #8e8e9f;
+      --green: #00e676;
+      --red: #ff3d00;
+      --cs: #ff9100;
+      --math: #ffd600;
+      --food: #ff5722;
+      --sports: #ff1744;
+      --doc: #00e676;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.003) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.003) 1px, transparent 1px);
+      background-size: 40px 40px, 40px 40px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 32px;
+      background: rgba(5, 5, 8, 0.95);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #ffffff; /* Single solid color */
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      transition: all 0.3s var(--ease);
+    }
+
+    .status-pill:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--border-hover);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      position: relative;
+    }
+
+    .dot.on {
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse-green 2s infinite;
+    }
+
+    .dot.err {
+      background: var(--red);
+      box-shadow: 0 0 10px var(--red);
+      animation: pulse-red 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+    }
+
+    @keyframes pulse-red {
+      0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(255, 77, 77, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+    }
+
+    #statsLabel {
+      margin-left: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 310px 1fr 420px;
+      padding: 24px;
+      gap: 24px;
+      overflow: hidden;
+    }
+
+    /* ── PANELS ── */
+    .panel {
+      position: relative;
+      background: var(--panel-glass);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .panel:hover {
+      border-color: var(--border-hover);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    .panel-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.01);
+      z-index: 2;
+      position: relative;
+    }
+
+    .panel-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      background: linear-gradient(90deg, #94a3b8, #64748b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 2;
+      position: relative;
+    }
+
+    /* ── CANVAS ── */
+    #scatter {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      cursor: crosshair;
+      z-index: 2;
+      position: relative;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 2;
+      position: relative;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 20px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      border-bottom: 2px solid transparent;
+      z-index: 2;
+    }
+
+    .tab:hover {
+      color: #fff;
+    }
+
+    .tab.on {
+      color: #fff;
+      border-bottom-color: var(--accent);
+      background: rgba(255, 255, 255, 0.02);
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.on {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      z-index: 2;
+      position: relative;
+    }
+
+    /* ── SECTION LABEL ── */
+    .s-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+
+    /* ── INPUTS ── */
+    input[type=text],
+    select,
+    textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s var(--ease);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    input[type=text]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.15), inset 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--accent);
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      height: 6px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      margin: 10px 0;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      background: transparent;
+      border: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 10px var(--accent);
+      cursor: pointer;
+      transition: transform 0.1s var(--ease);
+    }
+
+    input[type=range]:active::-webkit-slider-thumb {
+      transform: scale(1.3);
+      background: var(--accent);
+    }
+
+    textarea {
+      min-height: 120px;
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    select option {
+      background: var(--panel);
+      color: #fff;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 14px 20px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: all 0.3s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #000;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: all 0.6s var(--ease);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary:hover::after {
+      left: 100%;
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: wait;
+      transform: none;
+    }
+
+    .btn-ask {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 176, 255, 0.1));
+      color: #fff;
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      width: 100%;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.05);
+    }
+
+    .btn-ask:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 176, 255, 0.2));
+      border-color: var(--accent);
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn-ask:active {
+      transform: translateY(0);
+    }
+
+    .algo-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .algo-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.01);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+
+    .algo-btn:hover {
+      color: #fff;
+      border-color: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .algo-btn.on {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(0, 255, 136, 0.05);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+    }
+
+    /* ── RESULT CARDS ── */
+    .rcard {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      transition: all 0.3s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rcard:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.03);
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 255, 136, 0.05);
+    }
+
+    .rcard-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      line-height: 1.5;
+      color: #fff;
+    }
+
+    .rcard-foot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rcat {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .rdist {
+      margin-left: auto;
+      font-size: 11px;
+      color: #94a3b8;
+      font-family: 'Fira Code', monospace;
+      font-weight: 500;
+    }
+
+    .del-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+
+    .del-btn:hover {
+      color: var(--red);
+    }
+
+    /* ── METRICS ── */
+    .metric-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
+    }
+
+    .metric-val {
+      font-size: 42px;
+      font-weight: 800;
+      font-family: 'Fira Code', monospace;
+      color: #fff;
+      text-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-top: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .bench-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 12px;
+      border-radius: 12px;
+      transition: all 0.3s var(--ease);
+      border: 1px solid transparent;
+    }
+
+    .bench-row.winner {
+      background: rgba(0, 255, 136, 0.02);
+      border-color: rgba(0, 255, 136, 0.08);
+    }
+
+    .winner-badge {
+      font-size: 8px;
+      font-weight: 800;
+      color: #000;
+      background: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+      box-shadow: 0 0 10px var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    .speedup-note {
+      font-size: 11px;
+      color: #fff;
+      background: rgba(0, 255, 136, 0.05);
+      border: 1px dashed rgba(0, 255, 136, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
+      margin-top: 14px;
+      animation: pulse-border 2s infinite;
+    }
+
+    .speedup-note span {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    @keyframes pulse-border {
+      0% { border-color: rgba(0, 255, 136, 0.2); }
+      50% { border-color: rgba(0, 255, 136, 0.5); }
+      100% { border-color: rgba(0, 255, 136, 0.2); }
+    }
+
+    .bench-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bench-name {
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .bench-val {
+      font-family: 'Fira Code', monospace;
+      color: #fff;
+    }
+
+    .bench-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .bench-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s var(--ease);
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 11px;
+    }
+
+    .layer-lbl {
+      width: 28px;
+      color: #64748b;
+      font-family: 'Fira Code', monospace;
+      font-weight: 800;
+    }
+
+    .layer-track {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .layer-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .layer-cnt {
+      width: 60px;
+      text-align: right;
+      color: #94a3b8;
+      font-weight: 700;
+      font-family: 'Fira Code', monospace;
+    }
+
+    /* ── CHAT ── */
+    #chatHistory {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-right: 8px;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 16px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      animation: msgIn 0.4s var(--ease) both;
+    }
+
+    .msg pre {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .msg code {
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      background: rgba(255,255,255,0.08);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+      color: #000;
+      font-weight: 600;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 15px rgba(255,255,255,0.05);
+    }
+
+    .msg-ai {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .msg-model {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .thinking {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── DOC CARDS ── */
+    .dcard {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s var(--ease);
+    }
+
+    .dcard:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.03);
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 255, 136, 0.05);
+    }
+
+    .dcard-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .dcard-preview {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .dcard-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dcard-words {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ── LEGEND ── */
+    .legend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">NeuraX</div>
+    <div class="status-pill">
+      <div id="ollamaDot" class="dot"></div>
+      <div id="ollamaLabel">Connecting...</div>
+    </div>
+    <div class="status-pill">
+      <div class="dot on"></div>
+      <div>System Active</div>
+    </div>
+    <div id="statsLabel">Initializing Neural Network...</div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT PANEL: ANALYTICS -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-label">Neural Analytics</div>
+      </div>
+      <div class="panel-body">
+        <div>
+          <div class="s-label">Search Latency</div>
+          <div class="metric-card">
+            <div class="metric-val" id="latBig">0</div>
+            <div class="metric-sub">Microseconds</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="s-label">Benchmarks</div>
+          <div id="benchmarks"></div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="s-label">Category Legend</div>
+          <div class="legend-list">
+            <div class="legend-item"><span class="legend-dot" style="background:#ff9100; box-shadow:0 0 8px #ff9100;"></span>CS / Algorithms</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#ffd600; box-shadow:0 0 8px #ffd600;"></span>Mathematics</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#ff5722; box-shadow:0 0 8px #ff5722;"></span>Food & Cooking</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#ff1744; box-shadow:0 0 8px #ff1744;"></span>Sports & Games</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#00e676; box-shadow:0 0 8px #00e676;"></span>Documents (RAG)</div>
+          </div>
+        </div>
+
+        <div style="margin-top: auto;">
+          <div class="s-label">HNSW Topology</div>
+          <div id="layers"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: VISUALIZER -->
+    <div class="panel">
+      <canvas id="scatter"></canvas>
+    </div>
+
+    <!-- RIGHT PANEL: INTERFACE -->
+    <div class="panel">
+      <div class="tabs">
+        <div class="tab on" onclick="setTab(0)">Search</div>
+        <div class="tab" onclick="setTab(1)">Database</div>
+        <div class="tab" onclick="setTab(2)">AI Core</div>
+      </div>
+
+      <!-- SEARCH -->
+      <div id="tab0" class="tab-content on">
+        <div>
+          <div class="s-label">Vector Query</div>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="searchText" placeholder="Search neural space..."
+              onkeyup="if(event.key==='Enter')runSearch()">
+            <button class="btn btn-primary" style="width:80px;" onclick="runSearch()">Scan</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="s-label">Parameters</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <select id="metric">
+              <option value="cosine">Cosine Similarity</option>
+              <option value="euclidean">Euclidean Distance</option>
+              <option value="manhattan">Manhattan Distance</option>
+            </select>
+            <div>
+              <div style="font-size:11px; font-weight:700; color:var(--muted); margin-bottom:8px;">K = <span
+                  id="kVal">5</span></div>
+              <input type="range" id="kSlider" min="1" max="20" value="5"
+                oninput="document.getElementById('kVal').textContent=this.value">
+            </div>
+          </div>
+          <div class="algo-group">
+            <button id="algo-hnsw" class="algo-btn on" onclick="setAlgo('hnsw')">HNSW</button>
+            <button id="algo-kdtree" class="algo-btn" onclick="setAlgo('kdtree')">KD-Tree</button>
+            <button id="algo-bruteforce" class="algo-btn" onclick="setAlgo('bruteforce')">Brute</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="s-label">Neural Hits</div>
+          <div id="results" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="font-size:13px; color:var(--muted); text-align:center; padding:40px;">Awaiting interrogation...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATABASE -->
+      <div id="tab1" class="tab-content">
+        <div>
+          <div class="s-label">Ingest Data</div>
+          <input type="text" id="docTitle" placeholder="Identifier" style="margin-bottom:12px;">
+          <textarea id="docText" placeholder="Neural payload..."></textarea>
+          <button id="docBtn" class="btn btn-primary" style="margin-top:16px;" onclick="insertDocument()">⚡ Initialize
+            Embedding</button>
+          <div id="docStatus" style="font-size:12px; text-align:center; margin-top:12px; font-weight:600;"></div>
+        </div>
+
+        <div>
+          <div class="s-label">Active Nodes (<span id="docCountLabel">0</span>)</div>
+          <div id="docList" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </div>
+      </div>
+
+      <!-- AI CORE -->
+      <div id="tab2" class="tab-content" style="overflow:hidden;">
+        <div id="chatHistory">
+          <div class="msg msg-ai">
+            <div class="msg-model">System</div>
+            Neural Core online. RAG pipeline ready for interrogation.
+          </div>
+        </div>
+        <div style="padding-top:20px; border-top:1px solid var(--border); flex-shrink:0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div>
+              <div class="s-label" style="margin-bottom:2px;">Context Depth</div>
+              <div style="font-size:9px; color:var(--muted); letter-spacing:0.5px;">Sets how many document chunks the AI reads</div>
+            </div>
+            <input type="range" id="ragK" min="1" max="5" value="3" style="width:120px;">
+          </div>
+          <div style="display:flex; gap:12px;">
+            <input type="text" id="ragQuestion" placeholder="Ask the system..."
+              onkeyup="if(event.key==='Enter')askAI()">
+            <button id="askBtn" class="btn btn-ask" style="width:100px;" onclick="askAI()">Ask AI</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8000';
+    const DIMS = 16;
+    let allItems = [], searchResults = [], pcaPoints = [];
+    let hitIds = new Set(), queryPt = null, selAlgo = 'hnsw';
+
+    const CAT_COLOR = {
+      cs: '#ff9100', math: '#ffd600', food: '#ff5722', sports: '#ff1744', doc: '#00e676'
+    };
+
+    const KW = {
+      cs: ['algorithm', 'data', 'tree', 'graph', 'array', 'linked', 'hash', 'stack', 'queue', 'sort', 'binary', 'dynamic', 'programming', 'recursion', 'complexity', 'pointer', 'node', 'search', 'insert', 'bfs', 'dfs', 'heap', 'trie'],
+      math: ['calculus', 'matrix', 'probability', 'theorem', 'integral', 'derivative', 'linear', 'algebra', 'equation', 'function', 'prime', 'modular', 'combinatorics', 'permutation', 'eigenvalue', 'statistics', 'proof'],
+      food: ['food', 'pizza', 'sushi', 'ramen', 'pasta', 'recipe', 'cook', 'eat', 'restaurant', 'dish', 'ingredient', 'flavor', 'spice', 'noodle', 'bread', 'croissant', 'taco', 'fish', 'rice', 'soup'],
+      sports: ['sport', 'basketball', 'football', 'tennis', 'chess', 'swim', 'game', 'play', 'score', 'team', 'athlete', 'competition', 'match', 'tournament', 'olympic', 'dribble', 'tackle', 'serve']
+    };
+
+    function textToEmbedding(text) {
+      const t = text.toLowerCase(), ws = t.split(/\s+/);
+      const s = { cs: 0, math: 0, food: 0, sports: 0 };
+      for (const w of ws)
+        for (const [cat, kws] of Object.entries(KW))
+          for (const kw of kws) if (w.includes(kw) || kw.startsWith(w)) { s[cat] += 0.35; break; }
+      const mx = Math.max(...Object.values(s), 0.01);
+      const n = v => Math.min(v / mx * 0.88, 0.94);
+      const jr = () => (Math.random() - .5) * .04;
+      const emb = new Array(16).fill(0.08);
+      const fill = (i, sc) => {
+        if (sc < .01) return;
+        const b = n(sc);
+        emb[i] = Math.max(.05, b + jr()); emb[i + 1] = Math.max(.05, b + jr());
+        emb[i + 2] = Math.max(.05, b * .92 + jr()); emb[i + 3] = Math.max(.05, b * .87 + jr());
+      };
+      fill(0, s.cs); fill(4, s.math); fill(8, s.food); fill(12, s.sports);
+      return emb;
+    }
+
+    function pca2D(data) {
+      if (!data.length) return [];
+      const n = data.length, d = data[0].length;
+      const mean = new Array(d).fill(0);
+      data.forEach(v => v.forEach((x, j) => mean[j] += x / n));
+      const centered = data.map(v => v.map((x, j) => x - mean[j]));
+      const cov = Array.from({ length: d }, () => new Array(d).fill(0));
+      for (let i = 0; i < d; i++) for (let j = 0; j < d; j++) centered.forEach(v => cov[i][j] += v[i] * v[j] / (n - 1));
+      let v1 = new Array(d).fill(0).map(() => Math.random());
+      let v2 = new Array(d).fill(0).map(() => Math.random());
+      for (let iter = 0; iter < 50; iter++) {
+        let nv1 = new Array(d).fill(0);
+        for (let i = 0; i < d; i++) for (let j = 0; j < d; j++) nv1[i] += cov[i][j] * v1[j];
+        const m1 = Math.sqrt(nv1.reduce((a, b) => a + b * b, 0)); v1 = nv1.map(x => x / (m1 || 1));
+        let nv2 = new Array(d).fill(0);
+        for (let i = 0; i < d; i++) for (let j = 0; j < d; j++) nv2[i] += cov[i][j] * v2[j];
+        const dot = nv2.reduce((a, b, i) => a + b * v1[i], 0); nv2 = nv2.map((x, i) => x - dot * v1[i]);
+        const m2 = Math.sqrt(nv2.reduce((a, b) => a + b * b, 0)); v2 = nv2.map(x => x / (m2 || 1));
+      }
+      return centered.map(v => [
+        v.reduce((a, b, i) => a + b * v1[i], 0),
+        v.reduce((a, b, i) => a + b * v2[i], 0)
+      ]);
+    }
+
+    async function checkOllamaStatus() {
+      const dot = document.getElementById('ollamaDot');
+      const label = document.getElementById('ollamaLabel');
+      try {
+        const r = await fetch(API + '/status'), d = await r.json();
+        if (d.ollamaAvailable) {
+          dot.className = 'dot on';
+          label.textContent = d.genModel.toUpperCase();
+        } else {
+          dot.className = 'dot err';
+          label.textContent = 'OLLAMA OFFLINE';
+        }
+      } catch (_) {
+        dot.className = 'dot err';
+        label.textContent = 'BACKEND OFFLINE';
+      }
+    }
+
+    async function loadItems() {
+      try {
+        const r = await fetch(API + '/items');
+        allItems = await r.json();
+        document.getElementById('statsLabel').textContent = allItems.length + ' NEURAL NODES DETECTED';
+        if (allItems.length >= 2) {
+          const coords = pca2D(allItems.map(v => v.embedding));
+          pcaPoints = allItems.map((item, i) => ({ x: coords[i][0], y: coords[i][1], item }));
+        }
+      } catch (_) { }
+    }
+
+    async function loadHNSW() {
+      try {
+        const r = await fetch(API + '/hnsw-info'), d = await r.json();
+        const el = document.getElementById('layers');
+        const mx = Math.max(...d.nodesPerLayer, 1);
+        el.innerHTML = d.nodesPerLayer.map((c, i) => `
+          <div class="layer-row">
+            <div class="layer-lbl">L${i}</div>
+            <div class="layer-track"><div class="layer-fill" style="width:${(c / mx) * 100}%"></div></div>
+            <div class="layer-cnt">${c}</div>
+          </div>`).reverse().join('');
+      } catch (_) { }
+    }
+
+    let isScanning = false;
+    let scanY = 0;
+    let scanDir = 1;
+    let sonarPulse = 0;
+    let animTick = 0;
+
+    async function runSearch() {
+      const text = document.getElementById('searchText').value.trim();
+      if (!text) return;
+      isScanning = true;
+      const k = document.getElementById('kSlider').value;
+      const metric = document.getElementById('metric').value;
+      const emb = textToEmbedding(text);
+      try {
+        const r = await fetch(`${API}/search?v=${emb.join(',')}&k=${k}&metric=${metric}&algo=${selAlgo}`);
+        const data = await r.json();
+        searchResults = data.results || [];
+        hitIds = new Set(searchResults.map(r => r.id));
+        document.getElementById('latBig').textContent = data.latencyUs || 0;
+
+        const br = await fetch(`${API}/benchmark?v=${emb.join(',')}&k=${k}&metric=${metric}`);
+        renderBenchmarks(await br.json());
+
+        const all_embs = [...allItems.map(v => v.embedding), emb];
+        const coords = pca2D(all_embs);
+        const qc = coords[coords.length - 1];
+        queryPt = { x: qc[0], y: qc[1] };
+
+        renderResults(searchResults);
+      } catch (_) { 
+      } finally {
+        isScanning = false;
+      }
+    }
+
+    function renderBenchmarks(d) {
+      const times = [
+        { name: 'Brute Force', val: d.bruteforceUs, color: 'var(--red)' },
+        { name: 'KD-Tree', val: d.kdtreeUs, color: 'var(--math)' },
+        { name: 'HNSW', val: d.hnswUs, color: 'var(--accent)' }
+      ];
+      // Sort to find winner and loser
+      const sorted = [...times].sort((a, b) => a.val - b.val);
+      const winner = sorted[0];
+      const loser = sorted[sorted.length - 1];
+      const speedup = loser.val > 0 && winner.val > 0 ? (loser.val / winner.val).toFixed(1) : 1;
+
+      const mx = Math.max(d.bruteforceUs, d.kdtreeUs, d.hnswUs, 1);
+      
+      const row = (name, val, color) => {
+        const isWinner = name === winner.name;
+        return `
+        <div class="bench-row ${isWinner ? 'winner' : ''}">
+          <div class="bench-meta">
+            <span class="bench-name">${name} ${isWinner ? '<span class="winner-badge">FASTEST</span>' : ''}</span>
+            <span class="bench-val">${val.toLocaleString()} μs</span>
+          </div>
+          <div class="bench-track">
+            <div class="bench-fill" style="width:${(val / mx) * 100}%; background:${color}; color:${color}"></div>
+          </div>
+        </div>`;
+      };
+
+      let html = times.map(t => row(t.name, t.val, t.color)).join('');
+      
+      if (speedup > 1.1) {
+        html += `
+        <div class="speedup-note">
+          ⚡ <strong>${winner.name}</strong> is <span>${speedup}x</span> faster than ${loser.name}!
+        </div>`;
+      }
+      document.getElementById('benchmarks').innerHTML = html;
+    }
+
+    function renderResults(results) {
+      const el = document.getElementById('results');
+      if (!results.length) {
+        el.innerHTML = '<div style="font-size:13px; color:var(--muted); text-align:center; padding:40px;">No matches found.</div>';
+        return;
+      }
+      el.innerHTML = results.map(r => `
+        <div class="rcard">
+          <div class="rcard-title">${r.metadata}</div>
+          <div class="rcard-foot">
+            <span class="rcat" style="border-color:var(--${r.category}); color:var(--${r.category})">${r.category}</span>
+            <span class="rdist">${r.distance.toFixed(4)}</span>
+            <button class="del-btn" onclick="deleteItem(${r.id})">✕</button>
+          </div>
+        </div>`).join('');
+    }
+
+    async function deleteItem(id) {
+      await fetch(API + '/delete/' + id, { method: 'DELETE' });
+      loadItems();
+    }
+
+    async function loadDocList() {
+      try {
+        const r = await fetch(API + '/doc/list'), docs = await r.json();
+        document.getElementById('docCountLabel').textContent = docs.length;
+        const el = document.getElementById('docList');
+        if (!docs.length) {
+          el.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:20px;">Database empty.</div>';
+          return;
+        }
+        el.innerHTML = docs.map(d => `
+          <div class="dcard">
+            <div class="dcard-title">${d.title}</div>
+            <div class="dcard-preview">${d.preview}</div>
+            <div class="dcard-foot">
+              <span class="dcard-words">${d.words} words</span>
+              <button class="del-btn" onclick="deleteDoc(${d.id})">✕</button>
+            </div>
+          </div>`).join('');
+      } catch (_) { }
+    }
+
+    async function insertDocument() {
+      const title = document.getElementById('docTitle').value.trim();
+      const text = document.getElementById('docText').value.trim();
+      if (!title || !text) return;
+      const btn = document.getElementById('docBtn');
+      const status = document.getElementById('docStatus');
+      btn.disabled = true; btn.textContent = 'Processing...';
+      try {
+        const r = await fetch(API + '/doc/insert', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, text })
+        });
+        const d = await r.json();
+        if (d.error) {
+          status.innerHTML = `<span style="color:var(--red)">${d.error}</span>`;
+        } else {
+          status.innerHTML = `<span style="color:var(--green)">✓ ${d.chunks} nodes ingested</span>`;
+          document.getElementById('docTitle').value = '';
+          document.getElementById('docText').value = '';
+          const emb16 = textToEmbedding(title + ' ' + text);
+          await fetch(API + '/insert', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ metadata: title, category: 'doc', embedding: emb16 })
+          });
+          loadItems(); loadHNSW(); loadDocList();
+        }
+      } catch (_) {
+        status.innerHTML = '<span style="color:var(--red)">System error</span>';
+      }
+      btn.disabled = false; btn.textContent = '⚡ Initialize Embedding';
+    }
+
+    async function deleteDoc(id) {
+      await fetch(API + '/doc/delete/' + id, { method: 'DELETE' });
+      loadDocList();
+    }
+
+    async function askAI() {
+      const question = document.getElementById('ragQuestion').value.trim();
+      if (!question) return;
+      const k = parseInt(document.getElementById('ragK').value);
+      const btn = document.getElementById('askBtn');
+      btn.disabled = true;
+      const history = document.getElementById('chatHistory');
+
+      const qDiv = document.createElement('div');
+      qDiv.className = 'msg msg-user'; qDiv.textContent = question;
+      history.appendChild(qDiv);
+
+      const thinkDiv = document.createElement('div');
+      thinkDiv.className = 'msg msg-ai';
+      thinkDiv.innerHTML = '<div class="thinking"><div class="spinner"></div>Interrogating Neural Core...</div>';
+      history.appendChild(thinkDiv);
+      history.scrollTop = history.scrollHeight;
+
+      try {
+        const r = await fetch(API + '/doc/ask', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question, k })
+        });
+        const d = await r.json();
+        thinkDiv.remove();
+        const aDiv = document.createElement('div');
+        aDiv.className = 'msg msg-ai';
+        if (d.error) {
+          aDiv.innerHTML = `<div class="msg-model">Error</div><div style="color:var(--red)">${d.error}</div>`;
+        } else {
+          aDiv.innerHTML = `<div class="msg-model">${d.model}</div><div id="tp"></div>`;
+          history.appendChild(aDiv);
+          const target = aDiv.querySelector('#tp');
+          let i = 0;
+          const t = setInterval(() => {
+            if (i >= d.answer.length) { clearInterval(t); return; }
+            target.textContent += d.answer.slice(i, i + 3); i += 3;
+            history.scrollTop = history.scrollHeight;
+          }, 15);
+        }
+      } catch (_) {
+        thinkDiv.remove();
+        const err = document.createElement('div');
+        err.className = 'msg msg-ai';
+        err.innerHTML = '<div class="msg-model">Error</div>Core connection failed.';
+        history.appendChild(err);
+      }
+      document.getElementById('ragQuestion').value = '';
+      btn.disabled = false;
+    }
+
+    function setTab(idx) {
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('on', i === idx));
+      document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('on', i === idx));
+    }
+
+    function setAlgo(a) {
+      selAlgo = a;
+      document.querySelectorAll('[id^="algo-"]').forEach(b => b.classList.toggle('on', b.id === 'algo-' + a));
+    }
+
+    const canvas = document.getElementById('scatter');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resize() {
+      const parent = canvas.parentElement;
+      width = canvas.width = parent.clientWidth;
+      height = canvas.height = parent.clientHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let mouseCanvasX = -1000;
+    let mouseCanvasY = -1000;
+
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      mouseCanvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
+      mouseCanvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      mouseCanvasX = -1000;
+      mouseCanvasY = -1000;
+    });
+
+    let pulse = 0;
+    function draw() {
+      // Clear with very slight transparency to leave a trail of the scanning line if needed
+      ctx.fillStyle = '#020204';
+      ctx.fillRect(0, 0, width, height);
+
+      // Cyberpunk radar/neural grid layout
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.015)';
+      ctx.lineWidth = 1;
+      const gs = 60;
+      for (let x = 0; x < width; x += gs) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke(); }
+      for (let y = 0; y < height; y += gs) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke(); }
+
+      // Draw faint center coordinate lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.beginPath(); ctx.moveTo(width / 2, 0); ctx.lineTo(width / 2, height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, height / 2); ctx.lineTo(width, height / 2); ctx.stroke();
+
+      if (!pcaPoints.length) { 
+        requestAnimationFrame(draw); 
+        return; 
+      }
+
+      const pad = 80;
+      const minX = Math.min(...pcaPoints.map(p => p.x)), maxX = Math.max(...pcaPoints.map(p => p.x));
+      const minY = Math.min(...pcaPoints.map(p => p.y)), maxY = Math.max(...pcaPoints.map(p => p.y));
+      const sx = (width - pad * 2) / (maxX - minX || 1);
+      const sy = (height - pad * 2) / (maxY - minY || 1);
+
+      pulse = (pulse + 0.03) % (Math.PI * 2);
+      animTick = (animTick + 0.008) % 1;
+
+      // Track target coords and hit coordinates for graphics path rendering
+      let targetCoords = null;
+      const hitCoords = [];
+
+      if (queryPt) {
+        const x = pad + (queryPt.x - minX) * sx;
+        const y = pad + (queryPt.y - minY) * sy;
+        targetCoords = { x, y };
+      }
+
+      // First pass: gather coordinates of hit nodes
+      pcaPoints.forEach(p => {
+        const x = pad + (p.x - minX) * sx;
+        const y = pad + (p.y - minY) * sy;
+        const isHit = hitIds.has(p.item.id);
+        const color = CAT_COLOR[p.item.category] || '#555';
+        if (isHit) {
+          hitCoords.push({ x, y, color });
+        }
+      });
+
+      // Draw connecting path links between query target and hits (crawling neon pulse)
+      if (targetCoords && hitCoords.length > 0) {
+        // Retrieve edges of closest retrieved points
+        ctx.strokeStyle = 'rgba(0, 255, 136, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 5]);
+        hitCoords.forEach(hc => {
+          ctx.beginPath();
+          ctx.moveTo(targetCoords.x, targetCoords.y);
+          ctx.lineTo(hc.x, hc.y);
+          ctx.stroke();
+        });
+        ctx.setLineDash([]);
+
+        // Draw retrieved graph subnetwork link edges between hits themselves
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < hitCoords.length; i++) {
+          for (let j = i + 1; j < hitCoords.length; j++) {
+            const dx = hitCoords[i].x - hitCoords[j].x;
+            const dy = hitCoords[i].y - hitCoords[j].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 180) {
+              ctx.beginPath();
+              ctx.moveTo(hitCoords[i].x, hitCoords[i].y);
+              ctx.lineTo(hitCoords[j].x, hitCoords[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Draw crawling neon pulse points
+        hitCoords.forEach(hc => {
+          const px = targetCoords.x + (hc.x - targetCoords.x) * animTick;
+          const py = targetCoords.y + (hc.y - targetCoords.y) * animTick;
+          ctx.beginPath();
+          ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = hc.color;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+      }
+
+      // Draw nodes
+      pcaPoints.forEach(p => {
+        const x = pad + (p.x - minX) * sx;
+        const y = pad + (p.y - minY) * sy;
+        const isHit = hitIds.has(p.item.id);
+        const color = CAT_COLOR[p.item.category] || '#555';
+
+        // Glowing outer halos
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, isHit ? 22 : 10);
+        grad.addColorStop(0, color + (isHit ? '55' : '18'));
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(x, y, isHit ? 22 : 10, 0, Math.PI * 2); ctx.fill();
+
+        // Node center
+        ctx.beginPath();
+        ctx.arc(x, y, isHit ? 6.5 : 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = isHit ? '#ffffff' : color;
+        ctx.fill();
+
+        if (isHit) {
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          
+          // Outer thin ring
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(x, y, 10 + Math.sin(pulse * 2) * 2, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      });
+
+      // Draw Query Target sonar ripples and text markers
+      if (queryPt && targetCoords) {
+        sonarPulse = (sonarPulse + 0.012) % 1;
+        const maxR = 90;
+
+        // Ripple 1
+        ctx.strokeStyle = `rgba(0, 230, 118, ${0.3 * (1 - sonarPulse)})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(targetCoords.x, targetCoords.y, sonarPulse * maxR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Ripple 2
+        const s2 = (sonarPulse + 0.5) % 1;
+        ctx.strokeStyle = `rgba(255, 145, 0, ${0.15 * (1 - s2)})`;
+        ctx.beginPath();
+        ctx.arc(targetCoords.x, targetCoords.y, s2 * maxR, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Core target center
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'var(--accent)';
+        ctx.beginPath();
+        ctx.arc(targetCoords.x, targetCoords.y, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(targetCoords.x, targetCoords.y, 11, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Target label
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 10px Outfit';
+        ctx.fillText('QUERY TARGET', targetCoords.x + 16, targetCoords.y - 12);
+        
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '600 8px Fira Code';
+        ctx.fillText(`[${queryPt.x.toFixed(2)}, ${queryPt.y.toFixed(2)}]`, targetCoords.x + 16, targetCoords.y - 2);
+      }
+
+      // Laser search scanning effect overlay
+      if (isScanning) {
+        scanY += 3.5 * scanDir;
+        if (scanY > height) { scanY = height; scanDir = -1; }
+        if (scanY < 0) { scanY = 0; scanDir = 1; }
+
+        const grad = ctx.createLinearGradient(0, scanY - 30 * scanDir, 0, scanY);
+        grad.addColorStop(0, 'transparent');
+        grad.addColorStop(1, 'rgba(0, 255, 136, 0.08)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, scanDir === 1 ? scanY - 30 : scanY, width, 30);
+
+        ctx.strokeStyle = 'rgba(0, 255, 136, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, scanY);
+        ctx.lineTo(width, scanY);
+        ctx.stroke();
+
+        // Scanning UI Text
+        ctx.fillStyle = 'rgba(0, 255, 136, 0.8)';
+        ctx.font = '800 11px Outfit';
+        ctx.letterSpacing = '1.5px';
+        ctx.fillText('INTERROGATING NEURAL SPACE...', 24, height - 24);
+      }
+
+      // Check for hover item and draw tooltip
+      let closestPt = null;
+      let minDist = 18; // hover threshold in pixels
+
+      pcaPoints.forEach(p => {
+        const x = pad + (p.x - minX) * sx;
+        const y = pad + (p.y - minY) * sy;
+        const dx = mouseCanvasX - x;
+        const dy = mouseCanvasY - y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < minDist) {
+          minDist = dist;
+          closestPt = { p, x, y };
+        }
+      });
+
+      if (closestPt) {
+        const txt = closestPt.p.item.metadata;
+        const cat = closestPt.p.item.category.toUpperCase();
+
+        ctx.font = '600 11px Outfit';
+        const textWidth = ctx.measureText(txt).width;
+        ctx.font = '800 8px Outfit';
+        const catWidth = ctx.measureText(cat).width;
+        
+        const w = Math.max(textWidth, catWidth) + 24;
+        const h = 44;
+        const tx = Math.max(10, Math.min(width - w - 10, closestPt.x - w / 2));
+        const ty = Math.max(10, closestPt.y - h - 15);
+
+        // Tooltip background
+        ctx.fillStyle = 'rgba(14, 14, 19, 0.95)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(tx, ty, w, h, 8);
+        } else {
+          ctx.rect(tx, ty, w, h);
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        // Category label
+        ctx.fillStyle = CAT_COLOR[closestPt.p.item.category] || '#555';
+        ctx.font = '800 8px Outfit';
+        ctx.fillText(cat, tx + 12, ty + 16);
+
+        // Metadata text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '600 11px Outfit';
+        ctx.fillText(txt, tx + 12, ty + 31);
+      }
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+
+    checkOllamaStatus();
+    loadItems().then(loadHNSW);
+    loadDocList();
+    setInterval(checkOllamaStatus, 15000);
+  </script>
+</body>
+
+</html>
