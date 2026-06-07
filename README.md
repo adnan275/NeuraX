@@ -8,23 +8,25 @@
 
 NeuraX orchestrates text processing, high-dimensional indexing, and AI generation into a seamless, unified local pipeline:
 
-```
-    Your Query
-        │
-        ▼
-   Ollama (nomic-embed-text)  ──► Converts query to a high-dimensional vector
-        │
-        ▼
-   HNSW Index / DB            ──► Performs semantic nearest-neighbor search
-        │
-        ▼
-   Context Retrieval          ──► Fetches the top K most similar document chunks
-        │
-        ▼
-   Ollama (llama3.2)          ──► Combines query + context, generates a response
-        │
-        ▼
-     Response
+```mermaid
+flowchart TD
+    A[User Query] --> B[Ollama nomic-embed-text]
+    B -->|768D Vector| C{Nearest Neighbors Search}
+    C -->|HNSW Graph ANN| D[Top K Document Chunks]
+    C -->|KD-Tree Exact| D
+    C -->|Brute Force Exact| D
+    D -->|Context Retrieval| E[LLM Prompt Builder]
+    A --> E
+    E --> F[Ollama llama3.2 LLM]
+    F --> G[Streamed Response Output]
+    
+    style A fill:#050508,stroke:#00e676,stroke-width:2px,color:#fff
+    style B fill:#0e0e13,stroke:#1d1d24,stroke-width:1px,color:#fff
+    style C fill:#00e676,stroke:#00e676,stroke-width:2px,color:#000
+    style D fill:#0e0e13,stroke:#1d1d24,stroke-width:1px,color:#fff
+    style E fill:#0e0e13,stroke:#1d1d24,stroke-width:1px,color:#fff
+    style F fill:#0e0e13,stroke:#1d1d24,stroke-width:1px,color:#fff
+    style G fill:#050508,stroke:#ffc400,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -36,6 +38,18 @@ NeuraX features three core search algorithms running side-by-side so you can eva
 * **HNSW (Hierarchical Navigable Small World)**: A production-grade approximate nearest neighbor (ANN) search graph algorithm. By constructing a multi-layer graph index, it achieves logarithmic $O(\log N)$ search complexity, making it scale effortlessly to high dimensions.
 * **KD-Tree (K-Dimensional Tree)**: A spatial partitioning tree structured to divide high-dimensional coordinates. It provides exact nearest neighbor searches but degrades in speed as dimensions grow due to the *curse of dimensionality*.
 * **Brute Force (Flat Index)**: The exact search baseline that calculates distance metrics across every node in the database. Operates at linear $O(N)$ complexity.
+
+```mermaid
+flowchart TD
+    subgraph HNSW Graph Structure
+    L2[Layer 2: Sparse Expressway] -->|Zoom in neighborhood| L1[Layer 1: Transitway]
+    L1 -->|Greedy local search| L0[Layer 0: Dense All Nodes]
+    end
+    
+    style L2 fill:#ff3d00,stroke:#ff3d00,color:#fff
+    style L1 fill:#ff9100,stroke:#ff9100,color:#fff
+    style L0 fill:#00e676,stroke:#00e676,color:#000
+```
 
 ### 2. Multi-Metric Distance Support
 Supports three standard mathematical formulas to calculate similarity or distance vectors:
