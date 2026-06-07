@@ -1059,7 +1059,7 @@
         const r = await fetch(API + '/status'), d = await r.json();
         if (d.ollamaAvailable) {
           dot.className = 'dot on';
-          label.textContent = d.genModel.toUpperCase();
+          label.textContent = d.isFallback ? `${d.genModel.toUpperCase()} (HF CLOUD)` : d.genModel.toUpperCase();
         } else {
           dot.className = 'dot err';
           label.textContent = 'OLLAMA OFFLINE';
@@ -1279,6 +1279,7 @@
         aDiv.className = 'msg msg-ai';
         if (d.error) {
           aDiv.innerHTML = `<div class="msg-model">Error</div><div style="color:var(--red)">${d.error}</div>`;
+          history.appendChild(aDiv);
         } else {
           aDiv.innerHTML = `<div class="msg-model">${d.model}</div><div id="tp"></div>`;
           history.appendChild(aDiv);

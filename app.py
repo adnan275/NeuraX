@@ -388,30 +388,80 @@ class OllamaClient:
     def is_available(self) -> bool:
         try:
             r = requests.get(f"{self.base_url}/api/tags", timeout=2)
-            return r.status_code == 200
+            if r.status_code == 200:
+                return True
         except:
-            return False
+            pass
+        if os.environ.get("HF_TOKEN"):
+            return True
+        return False
 
     def embed(self, text: str) -> List[float]:
         try:
             r = requests.post(f"{self.base_url}/api/embeddings", 
                              json={"model": self.embed_model, "prompt": text},
-                             timeout=30)
+                             timeout=5)
             if r.status_code == 200:
                 return r.json().get("embedding", [])
         except:
             pass
+        
+        hf_token = os.environ.get("HF_TOKEN")
+        if hf_token:
+            try:
+                headers = {"Authorization": f"Bearer {hf_token}"}
+                r = requests.post(
+                    "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
+                    headers=headers,
+                    json={"inputs": text},
+                    timeout=15
+                )
+                if r.status_code == 200:
+                    res = r.json()
+                    if isinstance(res, list) and len(res) > 0 and isinstance(res[0], float):
+                        return res
+            except Exception as e:
+                print(f"HF embed error: {e}")
         return []
 
     def generate(self, prompt: str) -> str:
         try:
             r = requests.post(f"{self.base_url}/api/generate",
                              json={"model": self.gen_model, "prompt": prompt, "stream": False},
-                             timeout=180)
+                             timeout=30)
             if r.status_code == 200:
                 return r.json().get("response", "")
         except:
             pass
+
+        hf_token = os.environ.get("HF_TOKEN")
+        if hf_token:
+            models = ["Qwen/Qwen2.5-72B-Instruct", "meta-llama/Llama-3.2-3B-Instruct"]
+            for model_name in models:
+                try:
+                    headers = {"Authorization": f"Bearer {hf_token}"}
+                    payload = {
+                        "inputs": prompt,
+                        "parameters": {
+                            "max_new_tokens": 500,
+                            "return_full_text": False
+                        }
+                    }
+                    r = requests.post(
+                        f"https://api-inference.huggingface.co/models/{model_name}",
+                        headers=headers,
+                        json=payload,
+                        timeout=30
+                    )
+                    if r.status_code == 200:
+                        res = r.json()
+                        if isinstance(res, list) and len(res) > 0:
+                            return res[0].get("generated_text", "")
+                except Exception as e:
+                    print(f"HF generate error for {model_name}: {e}")
+            
+            return "ERROR: Hugging Face Inference API models timed out or were unavailable."
+        
         return "ERROR: Ollama unavailable. Run: ollama serve"
 
 # =====================================================================
@@ -536,13 +586,21 @@ class AskRequest(BaseModel):
 
 @app.get("/status")
 async def get_status():
+    try:
+        r = requests.get(f"{ollama.base_url}/api/tags", timeout=2)
+        local_ok = r.status_code == 200
+    except:
+        local_ok = False
+        
+    hf_ok = bool(os.environ.get("HF_TOKEN"))
     return {
-        "ollamaAvailable": ollama.is_available(),
-        "embedModel": ollama.embed_model,
-        "genModel": ollama.gen_model,
+        "ollamaAvailable": local_ok or hf_ok,
+        "embedModel": ollama.embed_model if local_ok else "HF-MiniLM",
+        "genModel": ollama.gen_model if local_ok else "HF-Qwen2.5",
         "docCount": len(doc_db.store),
         "docDims": doc_db.dims,
-        "vectorCount": len(db.store)
+        "vectorCount": len(db.store),
+        "isFallback": not local_ok and hf_ok
     }
 
 @app.get("/items")
