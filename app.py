@@ -418,8 +418,17 @@ class OllamaClient:
                 )
                 if r.status_code == 200:
                     res = r.json()
-                    if isinstance(res, list) and len(res) > 0 and isinstance(res[0], float):
-                        return res
+                    def _parse_embedding(val) -> List[float]:
+                        if not isinstance(val, list) or len(val) == 0:
+                            return []
+                        if isinstance(val[0], (int, float)):
+                            return [float(x) for x in val]
+                        if isinstance(val[0], list):
+                            return _parse_embedding(val[0])
+                        return []
+                    parsed = _parse_embedding(res)
+                    if parsed:
+                        return parsed
             except Exception as e:
                 print(f"HF embed error: {e}")
         return []
