@@ -3,10 +3,12 @@ import random
 import time
 import threading
 import json
+import os
 import requests
 from typing import List, Dict, Tuple, Optional, Any
 from dataclasses import dataclass, field
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import numpy as np
@@ -20,6 +22,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+async def read_index():
+    return FileResponse("index.html")
 
 DIMS = 16
 
@@ -664,4 +670,5 @@ async def doc_ask(req: AskRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
