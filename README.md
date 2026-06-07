@@ -1,11 +1,4 @@
----
-title: NeuraX
-emoji: 🧠
-colorFrom: green
-colorTo: yellow
-sdk: docker
-pinned: false
----
+
 
 # NeuraX — Vector Intelligence Platform
 
