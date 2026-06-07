@@ -20,8 +20,16 @@ COPY --chown=user requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Start Ollama in background and pull models during build
-RUN ollama serve & \
-    sleep 5 && \
+RUN mkdir -p /home/user/.ollama/models && \
+    ollama serve & \
+    for i in $(seq 1 60); do \
+        if curl -s http://127.0.0.1:11434/api/tags >/dev/null; then \
+            echo "Ollama server started successfully."; \
+            break; \
+        fi; \
+        echo "Waiting for Ollama server to start (attempt $i)..."; \
+        sleep 1; \
+    done && \
     ollama pull llama3.2 && \
     ollama pull nomic-embed-text
 
@@ -32,5 +40,5 @@ COPY --chown=user . .
 ENV PORT=7860
 EXPOSE 7860
 
-# Start Ollama in background, wait, then launch app
-CMD ["sh", "-c", "ollama serve & sleep 5 && python app.py"]
+# Start Ollama in background, wait for it, then launch app
+CMD ["sh", "-c", "ollama serve & for i in $(seq 1 60); do if curl -s http://127.0.0.1:11434/api/tags >/dev/null; then break; fi; sleep 1; done && python app.py"]
