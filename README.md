@@ -1,5 +1,14 @@
 
 
+---
+title: NeuraX
+emoji: 🧠
+colorFrom: green
+colorTo: yellow
+sdk: docker
+pinned: false
+---
+
 # NeuraX — Vector Intelligence Platform
 
 **NeuraX** is a custom-engineered, in-memory **Vector Database** and **Retrieval-Augmented Generation (RAG) pipeline** designed for lightning-fast semantic retrieval and local intelligence. Optimized for **macOS** and powered by a **Python FastAPI backend** and a premium, responsive **glassmorphic dark UI**, NeuraX implements high-performance search algorithms and PCA-based multidimensional vector visualization side-by-side.

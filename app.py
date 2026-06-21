@@ -24,6 +24,7 @@ app.add_middleware(
 )
 
 @app.get("/")
+@app.head("/")
 async def read_index():
     return FileResponse("index.html")
 
@@ -535,6 +536,7 @@ class AskRequest(BaseModel):
     k: int = 3
 
 @app.get("/status")
+@app.head("/status")
 async def get_status():
     return {
         "ollamaAvailable": ollama.is_available(),
